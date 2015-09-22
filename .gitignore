@@ -1,0 +1,11 @@
+target/
+.myeclipse/
+.settings/
+logs/
+mvc/
+.svn/
+.classpath
+.project
+pom.xml
+.idea/
+CollectorDemo.imlInitialized empty Git repository in /Users/Andy/Documents/Program/collector-master/.git/
