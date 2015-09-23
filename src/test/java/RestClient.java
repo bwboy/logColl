@@ -1,26 +1,22 @@
 
+import com.futong.domain.Host;
+import com.futong.domain.LogFileRest;
+import com.futong.domain.User;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
-import org.glassfish.jersey.internal.util.collection.ImmutableMultivaluedMap;
-
-import com.futong.domain.Host;
-import com.futong.domain.LogFile;
-import com.futong.domain.LogFileRest;
-import com.futong.domain.User;
 
 
 public class RestClient {
-	private static String URI = "http://127.0.0.1:8888/col/";
+	private static String URI = "http://192.168.122.63:8888/col/";
 	private static String res = "";
 	public static void main(String[] args) {
 		RestClient c = new RestClient();
-		c.updateLogFile();
+		c.addLogfile();
 		    
 	}
 	
@@ -46,7 +42,7 @@ public class RestClient {
 		public void addHost(){
 			res = "loghost";
 			Host h = new Host();
-			h.setHostname("64");
+			h.setHostname("bigdata04");
 			h.setIp("192.168.122.64");
 			h.setPassword("wentan4617");
 			h.setUsername("went");

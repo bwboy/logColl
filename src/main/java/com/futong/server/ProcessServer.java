@@ -40,7 +40,7 @@ public class ProcessServer {
 	
 	//run once when collector bootstrap 
 	public void bootstrap() throws Exception{
-		log.info("初始化采集机");
+		log.info("init Collector==========================================================================");
 		//0检查mongodb中是否有相应的document,没有就新建一个
 		dao.checkDb();
 			//1、查询所有的logFile
@@ -51,7 +51,7 @@ public class ProcessServer {
 		if(hosts != null && hosts.size() >0 ){
 			init(hosts);
 		}else{
-			log.error("请先增加被采集主机");
+			log.error("Please add a Host first!");
 			//throw new Exception("还没有配置主机");
 		}
 			
@@ -63,7 +63,7 @@ public class ProcessServer {
 		this.bootStrapAllJobs(logFiles);
 		//4将ScanDbTask加入调度
 		this.taskServer.addScanDbTask();
-		log.info("初始化采集机成功");
+		log.info("initialize collector successful!");
 	}
 	
 
@@ -74,13 +74,13 @@ public class ProcessServer {
 		log.info("查询所有状态是“更改”的logFile");
 		List<LogFile> logFiles = this.getAllChangedLogFile();
 		//2、获得所有主机列表
-		log.info("获得所有主机列表");
+		log.info("Get all the host list!");
 		List<Host> hosts = this.getAllHost();
 		//
 		if(hosts != null && hosts.size() >0 ){
 			init(hosts);
 		}else{
-			throw new Exception("没有主机");
+			throw new Exception("No host!");
 		}
 		
 		
@@ -90,7 +90,7 @@ public class ProcessServer {
 		//3根据状态更新任务
 		this.updateSchedule(logFiles);
 		
-		log.info("同步流程结束");
+		log.info("SYNC close!");
 	}
 	
 	
@@ -102,7 +102,7 @@ public class ProcessServer {
 			}
 			String ip = host.getIp();
 			if(!sshConnMap.containsKey(ip) && ip != "default"){
-				log.info("新增主机：" + ip);
+				log.info("New host added：[" + ip+"]");
 				SSHConn conn = new SSHConn(host);
 				sshConnMap.put(ip, conn);
 			}
@@ -114,7 +114,7 @@ public class ProcessServer {
 		boolean flag = host.getState() == ConstantUtils.DELETE ? true : false;
 		if(flag){
 			try {
-				log.info("删除主机 "+host.getIp());
+				log.info("Delete host ["+host.getIp()+"]");
 				dao.deleteHost(host.getIp());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -153,18 +153,18 @@ public class ProcessServer {
 			l.setSshConn(conn);
 			if(l.getLogState() == ConstantUtils.CHANGED){
 				//1表示有改动
-				log.info("更新调度任务 ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("Update task ：" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.update(l);
 				
 			}
 			if(l.getLogState() == ConstantUtils.DELETE){
 				//2表示删除
-				log.info("删除调度任务 ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("Delete task ：" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.delete(l);
 			}
 			if(l.getLogState() == ConstantUtils.NEW){
 				//3表示新增
-				log.info("新增调度任务 ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("New task ：" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.addLogCollectTask(l);
 			}
 		}
@@ -177,11 +177,11 @@ public class ProcessServer {
 				l.setSender(sender);
 				l.setSshConn(conn);
 				//3新增job
-				log.info("初始化调度任务 ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("initialize task ：" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.addLogCollectTask(l);
 			}else{
 				//TODO 逻辑上不存在这种情况。除非init方法出错。
-				log.error("sshConnMap中没有响应的conn，请检查host初始化方法init");
+				log.error("There is no response conn in sshConnMap，please check initialize class of host");
 			}
 			
 		}

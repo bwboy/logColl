@@ -1,27 +1,16 @@
 package com.futong.server;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
-
 import com.futong.Task.LogCollecterTask;
 import com.futong.Task.ScanDbTask;
 import com.futong.domain.LogFile;
 import com.futong.utils.ConstantUtils;
+import org.apache.log4j.Logger;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -49,15 +38,15 @@ public class TaskServer {
 	 * 启动任务调度服务器
 	 */
 	public void start() throws Exception {
-		log.info("启动任务调度器");
+		log.info("Starting task manager~~~");
 		SchedulerFactory sf = new StdSchedulerFactory(); 
 		try {
 			scheduler = sf.getScheduler();
 			scheduler.start();
-			log.info("启动任务调度器成功");
+			log.info("Start task manager successful!");
 		} catch (SchedulerException e) {
-			log.error("启动任务调度器失败", e);
-			throw new Exception("启动任务调度器失败", e);
+			log.error("Start task manager failed!", e);
+			throw new Exception("Start task manager failed!", e);
 		}
 		
 	}
@@ -120,7 +109,7 @@ public class TaskServer {
 	
 
 	public void addScanDbTask() throws SchedulerException {
-		log.info("将ScanDbTask加入任务调度器");
+		log.info("Add ScanDbTask into task manager");
 		JobDetail job = JobBuilder.newJob(ScanDbTask.class)
 				.withIdentity("scanDbTask",Scheduler.DEFAULT_GROUP)
 				.build();
@@ -134,7 +123,7 @@ public class TaskServer {
 				.withIdentity("scanDbTask",Scheduler.DEFAULT_GROUP)
 				.build();
 			scheduler.scheduleJob( job,trigger);// todo 是否考虑将相同周期、相同连接参数的任务编组执行
-		log.info("当前ScanDbTask的名称是：scanDbTask 所属调度组是" + Scheduler.DEFAULT_GROUP);
+		log.info("The ScanDbTask's name is ：scanDbTask and belongs to " + Scheduler.DEFAULT_GROUP+" group.");
 	}
 
 //	private LogCollecterTask logFileToTask(LogFile l) {

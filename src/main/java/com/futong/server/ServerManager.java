@@ -16,7 +16,7 @@ public class ServerManager {
 	private ProcessServer processServer;
 	
 	public ServerManager() {
-		log.info("ServerManager开始启动");
+		log.info("ServerManager is Starting~!Å");
 		taskServer = TaskServer.getInstance();
 		sendServer = SendServer.getInstance();
 		restServer = RestServer.getInstance();
@@ -31,13 +31,16 @@ public class ServerManager {
 	public void startAllServer() throws Exception {
 		try {
 			taskServer.start();
+			log.info("====================Task Server Strated!====================");
 			sendServer.start();
+			log.info("====================Send Server Started!====================");
 			restServer.start();
+			log.info("====================Rest Server Started!====================");
 			processServer.bootstrap();
-			
+			log.info("====================process Server has been bootstrap!");
 		} catch (Exception e) {
-			log.error("启动服务失败",e);
-			throw new Exception("服务启动异常",e);
+			log.error("Server Start faild!",e);
+			throw new Exception("Server is running with error!",e);
 		}
 		
 		

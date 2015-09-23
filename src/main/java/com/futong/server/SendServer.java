@@ -17,9 +17,9 @@ import java.net.InetSocketAddress;
 public class SendServer {
 	private static final Logger log = Logger.getLogger(SendServer.class);
 	private static SendServer sendServer;
-	private MyProperties props = new MyProperties();
-	private String targetIp = props.getMyPropertyValue("sendServerIP");
-	private Integer targetPort = Integer.parseInt(props.getMyPropertyValue("sendServerPort"));
+	private ConfigManager conf = ConfigManager.getInstance();
+	private String targetIp = conf.getConfigItem("sendServerIP","null").toString();
+	private Integer targetPort = Integer.parseInt(conf.getConfigItem("sendServerPort","null").toString());
 	
 	public static SendServer getInstance(){
 		if(sendServer == null){
@@ -36,9 +36,10 @@ public class SendServer {
 	
 	
 	public void start() {
-		log.info("启动graylog2 发送器");
+		log.info("Start graylog2 Sender!");
 		GelfConfiguration config = new GelfConfiguration(new InetSocketAddress(targetIp, targetPort))
-           .transport(GelfTransports.TCP)
+//		GelfConfiguration config = new GelfConfiguration(new InetSocketAddress("192.168.122.63", 12201))
+				.transport(GelfTransports.TCP)
            .queueSize(512)
            .connectTimeout(5000)
            .reconnectDelay(1000)

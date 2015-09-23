@@ -20,12 +20,12 @@ public class ScanDbTask implements Job {
 			throws JobExecutionException {
 		Long start = System.currentTimeMillis();
 		String tName = Thread.currentThread().getName();
-		log.info("ScanDbTask所属线程是 ："+tName);
+		log.info("ScanDbTask's Thread is  ："+tName);
 		ProcessServer processServer = ProcessServer.getInstance();
 		try {
-			log.info("同步数据库开始时间是：" + start);
+			log.info("Sync DB start at ：" + start);
 			processServer.start();
-			log.info("同步数据库耗时：" + (System.currentTimeMillis() - start) + " 毫秒");
+			log.info("Sync DB consume ：" + (System.currentTimeMillis() - start) + " ms");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

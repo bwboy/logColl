@@ -1,10 +1,11 @@
 package com.futong.Task;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
+import ch.ethz.ssh2.Session;
+import ch.ethz.ssh2.StreamGobbler;
+import com.futong.conn.SSHConn;
+import com.futong.dao.BaseDao;
+import com.futong.server.SendServer;
+import com.futong.utils.ConstantUtils;
 import org.apache.log4j.Logger;
 import org.graylog2.gelfclient.transport.GelfTransport;
 import org.quartz.Job;
@@ -12,13 +13,10 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import ch.ethz.ssh2.Session;
-import ch.ethz.ssh2.StreamGobbler;
-
-import com.futong.conn.SSHConn;
-import com.futong.dao.BaseDao;
-import com.futong.server.SendServer;
-import com.futong.utils.ConstantUtils;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 /**
  * 日志采集任务
  * @author went
@@ -46,13 +44,13 @@ public class LogCollecterTask implements Job {
 		if(logName == null || logType == null || sender == null || conn == null || hostIp == null || dao == null){
 			init(context);
 		}
-		log.info("采集任务：" + hostIp +"-"+logName +" 开始");
+		log.info("Collect Job：" + hostIp +"-"+logName +" Started!");
 		this.lastCount = dao.getLastCount(hostIp,logName);
 		String cmd_count_size = "wc -l -c " + logName;
 		
 		try {
 			String result = execRemoteCommand(cmd_count_size,true);
-			log.info("cmd_count_size 的值是：" + result);
+			log.info("cmd_count_size's values is ：" + result);
 			String[] arr = result.split(" ");
 			long currCount = Long.parseLong(arr[2]);
 			long currSize = Long.parseLong(arr[3]);
@@ -70,7 +68,7 @@ public class LogCollecterTask implements Job {
 
 
 	private void init(JobExecutionContext context) {
-		log.info("初始化采集参数");
+		log.info("Initialize the collector!");
 		JobDataMap map = context.getJobDetail().getJobDataMap();
 		this.logName = map.getString(ConstantUtils.LOGNAME);
 		this.logType = map.getString(ConstantUtils.LOGTYPE);
@@ -78,6 +76,7 @@ public class LogCollecterTask implements Job {
 		this.conn = (SSHConn) map.get(ConstantUtils.SSHCONN);
 		this.hostIp = conn.getConn().getHostname();
 		this.dao = new BaseDao();
+		log.info("----------------Collect Done-------------------");
 	}
 	
 	public String execRemoteCommand(String command,boolean isReturn) {
@@ -118,9 +117,9 @@ public class LogCollecterTask implements Job {
 				e.printStackTrace();
 			}
 			ssh.close();
-			log.info("运行结束，关闭连接");
+			log.info("RUNNING END，Close the connection");
 			long end = System.currentTimeMillis();
-			log.info("运行时间为：" + (end - begin) + "毫秒"+"一共" + count + "行");
+			log.info("RUNNING Time is ：" + (end - begin) + "ms"+",total" + count + "lines.");
 		}
 		return line;
 	}

@@ -3,7 +3,7 @@ package com.futong.dao;
 import com.futong.conn.DbConn;
 import com.futong.domain.Host;
 import com.futong.domain.LogFile;
-import com.futong.server.MyProperties;
+import com.futong.server.ConfigManager;
 import com.futong.utils.ConstantUtils;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class BaseDao {
 
-	private MyProperties props = new MyProperties();
+	private ConfigManager conf = ConfigManager.getInstance();
 
 	public static void main(String[] args) {
 		BaseDao dao = new BaseDao();
@@ -43,9 +43,11 @@ public class BaseDao {
 
 
 	public BaseDao() {
-		String dbServerIP = props.getMyPropertyValue("dbServerIP");
-		String dbServerAlias =props.getMyPropertyValue("dbServerAlias");
+		String dbServerIP = conf.getConfigItem("dbServerIP","null").toString();
+		String dbServerAlias =conf.getConfigItem("dbServerAlias","null").toString();
 		conn = new DbConn(dbServerIP,dbServerAlias);
+//		conn = new DbConn("192.168.122.63","graylog");
+
 		conn.connect();
 		db = conn.getDatabase();
 	}
@@ -218,7 +220,7 @@ public class BaseDao {
 			host.deleteOne(filter);
 			isSuccess = true;
 		} catch (Exception e) {
-			new Throwable("删除失败", e);
+			new Throwable("delete failed", e);
 		}
 		return isSuccess;
 	}
@@ -247,7 +249,7 @@ public class BaseDao {
 			logfile.insertOne(doc);
 		} catch (Exception e) {
 			isSuccess = false;
-			new Throwable("添加logfile失败",e);
+			new Throwable("add logfile failed",e);
 		}
 		return isSuccess;
 	}
@@ -267,7 +269,7 @@ public class BaseDao {
 			logfile.updateOne(condition, updateSetValue);
 		} catch (Exception e) {
 			isSuccess = false;
-			new Throwable("更新logfile失败",e);
+			new Throwable("update logfile failed",e);
 		}
 		return isSuccess;
 		
@@ -287,7 +289,7 @@ public class BaseDao {
 			host.insertOne(doc);
 		} catch (Exception e) {
 			isSuccess = false;
-			new Throwable("添加host失败",e);
+			new Throwable("add host failed",e);
 		}
 		return isSuccess;
 	}
@@ -321,7 +323,7 @@ public class BaseDao {
 			host.updateOne(filter, updateSetValue);
 		} catch (Exception e) {
 			isSuccess = false;
-			new Throwable("更新host失败",e);
+			new Throwable("update host failed",e);
 		}
 		return isSuccess;
 		
@@ -345,19 +347,19 @@ public class BaseDao {
 	public void checkDb() throws Exception{
 		if(this.getAllLogfiles().size() == 0){
 			LogFile f = new LogFile();
-			f.setHostIp("default");
-			f.setLogName("default");
-			f.setLogType("default");
+			f.setHostIp("192.168.122.64");
+			f.setLogName("/var/log/docker");
+			f.setLogType("TXT");
 			//状态为没有改变，不会加入到调度队列
 			this.addLogfile(f);
 		}
 		if(this.getAllHost().size() == 0){
 			Host h = new Host();
-			h.setHostname("localhost");
-			h.setTypeName("default");
-			h.setUsername("-");
-			h.setPassword("-");
-			h.setIp("default");
+			h.setHostname("bigdata04");
+			h.setTypeName("LINUX");
+			h.setUsername("went");
+			h.setPassword("wentan4617");
+			h.setIp("192.168.122.64");
 			this.addHost(h);
 		}
 	}

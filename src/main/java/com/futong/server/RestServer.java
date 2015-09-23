@@ -34,7 +34,7 @@ public class RestServer {
 			InetAddress addr = InetAddress.getLocalHost();
 			String ip=addr.getHostAddress().toString();//自动获得本机IP
 			BASE_URI = URI.create("http://"+ip+":"+port+"/");
-			log.info("RestServer的url是：" + BASE_URI);
+			log.info("RestServer's URL is ：" + BASE_URI);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -42,7 +42,7 @@ public class RestServer {
 	 }
 	 
 	 public void start() {
-		 log.info("RestServer启动");
+		 log.info("RestServer start");
 	        try {
 	            Map<String, String> initParams = new HashMap<String, String>();
 	            initParams.put(ServerProperties.PROVIDER_PACKAGES,  CollectorResource.class.getPackage().getName());
@@ -54,7 +54,7 @@ public class RestServer {
 	  }
 	 public void stop(){
 		 server.shutdownNow();
-		 log.info("RestServer关闭");
+		 log.info("RestServer close");
 	 }
 	 public static void main(String[] args) {
 		 RestServer server = RestServer.getInstance();
