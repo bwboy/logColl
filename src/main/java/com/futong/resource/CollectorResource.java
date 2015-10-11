@@ -1,32 +1,19 @@
 package com.futong.resource;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Singleton;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
-import org.junit.runners.Parameterized.Parameters;
-
 import com.futong.dao.BaseDao;
 import com.futong.domain.Host;
 import com.futong.domain.LogFile;
 import com.futong.domain.LogFileRest;
-import com.futong.domain.User;
+import com.futong.server.RestServer;
 import com.futong.server.TaskServer;
+import org.apache.log4j.Logger;
+
+import javax.inject.Singleton;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -46,14 +33,16 @@ import com.futong.server.TaskServer;
 @Singleton
 @Path("col")
 public class CollectorResource {
+	private static Logger log = Logger.getLogger(RestServer.class);
+
 	private BaseDao dao = new BaseDao();
 	private TaskServer server = TaskServer.getInstance();
 	//默认方法
 	@GET
 	@Path("/loghost")
-	@Produces({ "application/json", "application/xml" })
-	public List<Host> getMyResources() {
-		List<Host> hosts = dao.getAllHost();
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Host> getMyResources() {
+		ArrayList<Host> hosts = dao.getAllHost();
 		return hosts;
 	}
 

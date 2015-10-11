@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+
 /**
  * 日志采集任务
  * @author went
@@ -44,16 +46,28 @@ public class LogCollecterTask implements Job {
 		if(logName == null || logType == null || sender == null || conn == null || hostIp == null || dao == null){
 			init(context);
 		}
-		log.info("Collect Job：" + hostIp +"-"+logName +" Started!");
+		log.info("Collect Job:" + hostIp +"-"+logName +" Started!");
 		this.lastCount = dao.getLastCount(hostIp,logName);
 		String cmd_count_size = "wc -l -c " + logName;
 		
 		try {
+			long currCount = 0;
+			long currSize = 0;
 			String result = execRemoteCommand(cmd_count_size,true);
-			log.info("cmd_count_size's values is ：" + result);
 			String[] arr = result.split(" ");
-			long currCount = Long.parseLong(arr[2]);
-			long currSize = Long.parseLong(arr[3]);
+			log.debug("There may be cause a problem , the arr is " + Arrays.toString(arr) + " And the arr lenth is " + arr.length);
+			if(arr.length==5){
+				 currCount = Long.parseLong(arr[2]);
+				 currSize = Long.parseLong(arr[3]);
+
+			}else if(arr.length==6)
+			{
+				 currCount = Long.parseLong(arr[3]);
+				 currSize = Long.parseLong(arr[4]);
+			}else{
+				log.warn("New condition! The output size is "+arr.length+",and arr content is "+Arrays.toString(arr));
+			}
+			log.info("The log's count is:" + currCount+". The log's size is: "+ currSize+".");
 			dao.updateCurr(logName,hostIp,currCount,currSize,System.currentTimeMillis());
 			long diff = currCount > lastCount ? currCount - lastCount : 0;
 			
@@ -98,11 +112,12 @@ public class LogCollecterTask implements Job {
 						transport.send(sender.getMessage(line, hostIp,logType));
 						count++;
 						if(count%50000 == 0){
-							System.out.println(count);
+							log.info("sending count:" + count);
 						}	
 					}
 				}else{
 					while ((line = buff.readLine()) != null) {
+						log.info("lines is :"+line);
 						return line;
 					}
 				}
@@ -117,9 +132,9 @@ public class LogCollecterTask implements Job {
 				e.printStackTrace();
 			}
 			ssh.close();
-			log.info("RUNNING END，Close the connection");
+			log.info("RUNNING END,Close the connection");
 			long end = System.currentTimeMillis();
-			log.info("RUNNING Time is ：" + (end - begin) + "ms"+",total" + count + "lines.");
+			log.info("RUNNING Time is :" + (end - begin) + "ms"+",total:" + count + " lines.");
 		}
 		return line;
 	}

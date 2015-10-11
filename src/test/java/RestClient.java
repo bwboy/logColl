@@ -12,11 +12,11 @@ import javax.ws.rs.core.Response;
 
 
 public class RestClient {
-	private static String URI = "http://192.168.122.63:8888/col/";
+	private static String URI = "http://192.168.25.26:8888/col/";
 	private static String res = "";
 	public static void main(String[] args) {
 		RestClient c = new RestClient();
-		c.addLogfile();
+		c.addHost();
 		    
 	}
 	
@@ -42,10 +42,10 @@ public class RestClient {
 		public void addHost(){
 			res = "loghost";
 			Host h = new Host();
-			h.setHostname("bigdata04");
-			h.setIp("192.168.122.64");
-			h.setPassword("wentan4617");
-			h.setUsername("went");
+			h.setHostname("bigdata03");
+			h.setIp("192.168.122.63");
+			h.setPassword("Cl0uD00rs!");
+			h.setUsername("root");
 			Client client = ClientBuilder.newClient();
 	        WebTarget target = client.target(URI+res);
 	        Response response = target.request()

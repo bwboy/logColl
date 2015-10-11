@@ -70,7 +70,7 @@ public class TaskServer {
 		String jobName = dataMap.getString(ConstantUtils.LOGNAME);
 		String jobGroup = dataMap.getString(ConstantUtils.COLLECTGROUPID);
 		int interval = dataMap.getInt(ConstantUtils.COLLECTINTERVAL);
-		log.info("添加调度任务 ：" + jobGroup + "-" +jobName);
+		log.info("Add schedule job :" + jobGroup + "-" +jobName);
 		JobDetail job = JobBuilder.newJob(LogCollecterTask.class)
 				.withIdentity(jobName,jobGroup )
 				.setJobData(dataMap)
@@ -123,7 +123,7 @@ public class TaskServer {
 				.withIdentity("scanDbTask",Scheduler.DEFAULT_GROUP)
 				.build();
 			scheduler.scheduleJob( job,trigger);// todo 是否考虑将相同周期、相同连接参数的任务编组执行
-		log.info("The ScanDbTask's name is ：scanDbTask and belongs to " + Scheduler.DEFAULT_GROUP+" group.");
+		log.info("The ScanDbTask's name is : scanDbTask and belongs to " + Scheduler.DEFAULT_GROUP+" group.");
 	}
 
 //	private LogCollecterTask logFileToTask(LogFile l) {

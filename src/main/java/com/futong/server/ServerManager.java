@@ -39,7 +39,7 @@ public class ServerManager {
 			processServer.bootstrap();
 			log.info("====================process Server has been bootstrap!");
 		} catch (Exception e) {
-			log.error("Server Start faild!",e);
+			log.error("Server Start failed!",e);
 			throw new Exception("Server is running with error!",e);
 		}
 		

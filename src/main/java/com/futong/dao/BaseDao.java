@@ -11,6 +11,7 @@ import com.mongodb.QueryOperators;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import java.util.List;
 public class BaseDao {
 
 	private ConfigManager conf = ConfigManager.getInstance();
+	private static Logger log = Logger.getLogger(BaseDao.class);
+
 
 	public static void main(String[] args) {
 		BaseDao dao = new BaseDao();
@@ -75,7 +78,7 @@ public class BaseDao {
 		MongoCollection collection = this.db.getCollection(ConstantUtils.LOGFILE);
 		BasicDBObject queryObject = new BasicDBObject().append("logState", new BasicDBObject().append(QueryOperators.NE, 0));
 		MongoCursor coursor= collection.find(queryObject).iterator();
-		List<LogFile> logFiles = new ArrayList<>(); 
+		List<LogFile> logFiles = new ArrayList<>();
 		while(coursor.hasNext()){
 			 Document d = (Document) coursor.next();
 			 LogFile l = this.documentToLogFile(d);
@@ -94,10 +97,10 @@ public class BaseDao {
 		BasicDBObject updateSetValue=new BasicDBObject("$set",updater);
 		logfile.updateMany(filter, updateSetValue);
 	}
-	public List<Host> getAllHost() {
+	public ArrayList<Host> getAllHost() {
 		MongoCollection host = this.db.getCollection(ConstantUtils.LOGHOST);
 		MongoCursor rs = host.find().iterator();
-		List<Host> hosts = new ArrayList<>();
+		ArrayList<Host> hosts = new ArrayList<>();
 		while(rs.hasNext()){
 			Document d = (Document) rs.next();
 			Host h = new Host();
@@ -143,7 +146,7 @@ public class BaseDao {
 		MongoCursor<Document> cur = logfile.find(filter).iterator();
 		long lastModify = 0;
 		while(cur.hasNext()){
-			Document d = (Document) cur.next();
+			Document d = cur.next();
 			lastModify = d.getLong("lastModify");
 		}
 		return lastModify;
@@ -200,6 +203,7 @@ public class BaseDao {
 	}
 	
 	private Document hostToDocument(Host h) {
+		log.info("program is running to here.Just fine!");
 		Document doc = new Document();
 		doc.put("hostname",h.getHostname());
 		doc.put("typeName",h.getTypeName());
@@ -234,7 +238,7 @@ public class BaseDao {
 		BasicDBObject filter = new BasicDBObject(condition);
 		MongoCursor<Document> cur = logfile.find(filter).iterator();
 		while(cur.hasNext()){
-			Document d = (Document) cur.next();
+			Document d = cur.next();
 			logfiles.add(documentToLogFile(d));
 		}
 		return logfiles;
@@ -346,20 +350,29 @@ public class BaseDao {
 	//检查是否存在两个
 	public void checkDb() throws Exception{
 		if(this.getAllLogfiles().size() == 0){
+			String initLogServerIp = conf.getConfigItem("initLogServerIp","null").toString();
+			String initLogType = conf.getConfigItem("initLogType","null").toString();
+			String initLogName = conf.getConfigItem("initLogName","null").toString();
 			LogFile f = new LogFile();
-			f.setHostIp("192.168.122.64");
-			f.setLogName("/var/log/docker");
-			f.setLogType("TXT");
+			f.setHostIp(initLogServerIp);
+			f.setLogName(initLogName);
+			f.setLogType(initLogType);
 			//状态为没有改变，不会加入到调度队列
 			this.addLogfile(f);
 		}
 		if(this.getAllHost().size() == 0){
+			String initLogServerIp = conf.getConfigItem("initLogServerIp","null").toString();
+			String initLogServerName = conf.getConfigItem("initLogServerName","null").toString();
+			String initLogServerType = conf.getConfigItem("initLogServerType","null").toString();
+			String initLogUserName = conf.getConfigItem("initLogUserName","null").toString();
+			String initLogUserPassword = conf.getConfigItem("initLogUserPassword","null").toString();
+
 			Host h = new Host();
-			h.setHostname("bigdata04");
-			h.setTypeName("LINUX");
-			h.setUsername("went");
-			h.setPassword("wentan4617");
-			h.setIp("192.168.122.64");
+			h.setHostname(initLogServerName);
+			h.setTypeName(initLogServerType);
+			h.setUsername(initLogUserName);
+			h.setPassword(initLogUserPassword);
+			h.setIp(initLogServerIp);
 			this.addHost(h);
 		}
 	}

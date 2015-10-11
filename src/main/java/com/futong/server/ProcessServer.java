@@ -69,9 +69,9 @@ public class ProcessServer {
 
 	//采集程序流程入口
 	public void start() throws Exception{
-		log.info("同步流程启动");
+		log.info("SYNC engine started!");
 		//1、查询所有状态是“更改”的logFile
-		log.info("查询所有状态是“更改”的logFile");
+		log.info("Search all the state is “changed” logFile");
 		List<LogFile> logFiles = this.getAllChangedLogFile();
 		//2、获得所有主机列表
 		log.info("Get all the host list!");
@@ -85,7 +85,7 @@ public class ProcessServer {
 		
 		
 		//2更新数据库，将所有状态改为没有改动 
-		log.info("2更新数据库，将所有状态改为没有改动");
+		log.info("Update the Database ,Change all the status to no changed!");
 		this.updateDb();
 		//3根据状态更新任务
 		this.updateSchedule(logFiles);
@@ -102,7 +102,7 @@ public class ProcessServer {
 			}
 			String ip = host.getIp();
 			if(!sshConnMap.containsKey(ip) && ip != "default"){
-				log.info("New host added：[" + ip+"]");
+				log.info("New host added“:[" + ip+"]");
 				SSHConn conn = new SSHConn(host);
 				sshConnMap.put(ip, conn);
 			}
@@ -153,18 +153,18 @@ public class ProcessServer {
 			l.setSshConn(conn);
 			if(l.getLogState() == ConstantUtils.CHANGED){
 				//1表示有改动
-				log.info("Update task ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("Update task :" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.update(l);
 				
 			}
 			if(l.getLogState() == ConstantUtils.DELETE){
 				//2表示删除
-				log.info("Delete task ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("Delete task :" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.delete(l);
 			}
 			if(l.getLogState() == ConstantUtils.NEW){
 				//3表示新增
-				log.info("New task ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("New task :" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.addLogCollectTask(l);
 			}
 		}
@@ -177,7 +177,7 @@ public class ProcessServer {
 				l.setSender(sender);
 				l.setSshConn(conn);
 				//3新增job
-				log.info("initialize task ：" + l.getHostIp()+":/"+l.getLogName());
+				log.info("initialize task :" + l.getHostIp()+":/"+l.getLogName());
 				taskServer.addLogCollectTask(l);
 			}else{
 				//TODO 逻辑上不存在这种情况。除非init方法出错。
